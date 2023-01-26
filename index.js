@@ -22,6 +22,27 @@ const server = http.createServer(function (req, res) {
                 res.end(file);
             });
             break;
+        case req.url === '/phones' && req.method === 'POST':
+            
+            let body = "";
+            req.on('data', function (chunk) {
+                body += chunk.toString();
+            });
+
+            req.on('end', function() {
+                const newPhone = JSON.parse(body);
+                
+                fs.readFile('./phones.json', (err, data) => {
+                    const phones = JSON.parse(data);
+                    phones.push(newPhone);
+
+                    fs.writeFile('./phones.json', JSON.stringify(phones), () => {
+                        res.end(JSON.stringify(newPhone));
+                    });
+                });
+            })
+
+            break;
         default:
             res.end('404');
     }
